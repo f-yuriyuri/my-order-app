@@ -3,7 +3,7 @@ name: Deploy to EC2 (develop)
 on:
   push:
     branches:
-      - develop # developブランチにpushされたとき実行
+      - develop  # developブランチにpushされたとき実行
 
 jobs:
   deploy:
@@ -34,6 +34,17 @@ jobs:
             echo ">>> Pull latest changes"
             git fetch origin develop
             git reset --hard origin/develop
+
+            echo ">>> Create .env file with GitHub Secrets"
+            cat > .env << EOF
+            DB_HOST=${{ secrets.DB_HOST }}
+            DB_USER=${{ secrets.DB_USER }}
+            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+            DB_DATABASE=${{ secrets.DB_DATABASE }}
+            DB_PORT=${{ secrets.DB_PORT }}
+            DB_SSL=true
+            PORT=${{ secrets.PORT }}
+            EOF
 
             echo ">>> Install dependencies"
             sudo npm install --production
